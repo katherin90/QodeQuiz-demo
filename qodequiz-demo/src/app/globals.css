@@ -1,0 +1,395 @@
+@import "tailwindcss";
+
+:root {
+  --bg-light: #f5f6fa;
+  --bg-dark: #020617;
+
+  --elemBg-dark: rgba(16, 23, 40, 0.27);
+  --elemBg-light: rgba(248, 250, 252, 0.27);
+
+  --text-light: #020617;
+  --text-dark: #e0e0e0;
+  
+  --accent: #00F6FF;
+  --secondary: #8B5CF6;
+
+  --border-light: rgba(15,23,42,0.08);
+  --border-dark:  rgba(255,255,255,0.08);
+
+  --status-correct: #22C55E;
+  --status-wrong: #F43F5E;
+  --status-info: #38BDF8;
+
+  --cat-js: #FF6F00;
+  --cat-js-rgb: 201, 255, 26;
+  --cat-react: #00D8FF;
+  --cat-react-rgb: 0, 246, 255;
+  --cat-html: #FF3D00;
+  --cat-html-rgb: 255, 79, 58;
+  --cat-next: #7C4DFF;
+  --cat-next-rgb: 139, 92, 246;
+  --cat-wordpress: #21759B;
+  --cat-wordpress-rgb: 30, 200, 255;
+  --cat-vue: #41B883;
+  --cat-vue-rgb:43, 255, 136;
+  --cat-php: #6E7CFF;
+  --cat-php-rgb: 110, 124, 255;
+  --cat-laravel: #FF3B6B;
+  --cat-laravel-rgb: 255, 59, 107;
+}
+
+@layer base {
+  html {
+    font-family: var(--firaCode);
+    color-scheme: dark;
+    @apply text-base leading-normal h-screen;
+    
+    &:has(input[data-theme]:checked) {
+      color-scheme: light;
+    }
+  }
+  body {
+    align-items: flex-start;
+    color: light-dark(var(--text-light), var(--text-dark));
+    background-color: light-dark(var(--bg-light), var(--bg-dark));
+    @apply relative flex items-start min-h-full;
+    
+    &::before {
+      content: '';
+      background-image: url("/images/noise-for-dark.png");
+      opacity: light-dark(0.2, 0.8);
+      @apply block absolute top-0 left-0 w-full h-full -z-2 pointer-events-none;
+    }
+    &::-webkit-scrollbar-track {
+      border-radius: 3px;
+      background-color: var(--secondary);
+    }
+    &::-webkit-scrollbar {
+      width: 2px;
+      background-color: var(--secondary)
+    }
+    &::-webkit-scrollbar-thumb {
+      border-radius: 3px;
+      background-color: var(--accent)
+    }
+  }
+  main {
+    flex: 1 1 auto;
+    @apply px-[clamp(20px,2.3vw,40px)]
+  }
+  section {
+    @apply pt-[clamp(40px,3.2vw,60px)] pb-[clamp(15px,1.6vw,30px)]
+  }
+  .content {
+    container-type: inline-size;
+    @apply max-w-310 mx-auto
+  }
+  .divider {
+    border-color: light-dark(var(--border-light), var(--border-dark));
+    @apply mt-9 w-full
+  }
+  .gradientText {
+    background-clip: text;
+    color: transparent;
+    @apply bg-linear-to-r from-(--accent) from-0% to-(--secondary) to-70%
+  }
+  .elementBg {
+    background-color: light-dark(var(--elemBg-light), var(--elemBg-dark));
+    border: 1px solid light-dark(var(--border-light), var(--border-dark));
+    @apply p-4 rounded-xl backdrop-blur-[3px];
+  }
+  a:not([class]) {
+    position: relative;
+    display: inline-block;
+    transition: color 0.3s;
+    &::before {
+      content: '';
+      position: absolute;
+      top: calc(100% + 2px);
+      left: 0;
+      right: 0;
+      height: 1px;
+      transition: background-image 0.3s;
+      @apply bg-linear-to-r from-(--accent) from-0% to-(--secondary) to-70% 
+    }
+    &:hover, &:focus-visible {
+      color: var(--secondary);
+      &::before {
+        @apply bg-linear-to-r from-(--accent) from-0% to-(--secondary) to-0% 
+      }
+    }
+
+  }
+  .btn {
+    --darkShadow: 0 0 14px rgba(0,246,255,0.35), 0 2px 8px rgba(0,0,0,0.6);
+    --lightShadow: 0 0 10px rgba(0,200,214,0.25), 0 4px 14px rgba(15,23,42,0.12);
+    
+    border-color: light-dark(var(--border-light), var(--border-dark));
+    background-color: light-dark(var(--elemBg-light), var(--elemBg-dark));
+    box-shadow: light-dark(var(--lightShadow), var(--darkShadow));
+    @apply inline-flex items-center justify-center w-50 h-13 text-[clamp(14px,1.1vw,16px)] font-semibold border rounded-[5px] backdrop-blur-[3px];
+    
+    &:hover, &:focus-visible {
+      box-shadow: 0 0 18px rgba(0,246,255,0.45), 0 4px 12px rgba(0,0,0,0.7);
+    }
+  }
+}
+@layer components {
+  .sectionDivider {
+    @apply relative block px-3.75 h-px bg-linear-to-r from-(--accent) from-0% to-(--secondary) to-70% -z-1;
+    &::before, &::after {
+      content: '';
+      display: inline-block;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+    }
+    &:before {
+      background-color: var(--accent);
+      left: 0;
+    }
+    &::after {
+      background-color: var(--secondary);
+      right: 0;
+    }
+  }
+  .header {
+    translate: calc((100% - 32px) * -1) 0;
+    transition: translate 0.3s;
+    @apply absolute top-0 left-0 flex items-start h-screen lg:sticky lg:translate-[0_0] lg:top-0 lg:w-80;
+    &:has(input[data-menu]:checked) {
+      translate: 0 0;
+      z-index: 2;
+      .menuIconClose {
+        display: flex;
+      }
+    }
+    input[data-menu]:checked + .menuIconOpen {
+      @apply hidden
+    }
+  }
+  .menuIconClose {
+    @apply w-8 h-6 hidden items-center justify-center;
+    &::after, &::before {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 2px;
+      background-color: var(--secondary);
+    }
+    &::after {
+      rotate: 45deg;
+      translate: -50%;
+    }
+    &::before {
+      rotate: -45deg;
+      translate: 47%;
+    }
+  }
+  .menuIconOpen {
+    @apply block w-4 h-0.5 bg-(--secondary) shadow-[0_5px_0_var(--secondary),0_-5px_0_var(--secondary)]
+  }
+  .headerContent {
+    flex: 1 1 auto;
+    background-color: light-dark(var(--elemBg-light), var(--elemBg-dark));
+    box-shadow: inset -1 0 0 light-dark(rgba(15,23,42,0.08), rgba(255,255,255,0.06));
+    @apply flex flex-col h-full items-center px-4 py-9 backdrop-blur-[10px] overflow-auto;
+    &::-webkit-scrollbar-track {
+      border-radius: 3px;
+      background-color: var(--accent);
+    }
+    &::-webkit-scrollbar {
+      width: 2px;
+      background-color: var(--accent)
+    }
+    &::-webkit-scrollbar-thumb {
+      border-radius: 3px;
+      background-color: var(--secondary)
+    }
+  }
+  .menuLink {
+    color: light-dark(var(--text-light), var(--text-dark));
+    @apply text-[1.25rem] hover:text-(--secondary) transition-colors duration-500 focus-visible:text-(--secondary)
+  }
+  .toggleBtn {
+    anchor-name: --my-anchor;
+    @apply cursor-pointer font-bold hover:opacity-80 transition-opacity duration-300;
+    &:hover + .themToggleHint {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+  .themToggleHint {
+    position: absolute;
+    position-anchor: --my-anchor;
+    position-area: block-start center;
+    filter: drop-shadow(0 0 1px light-dark(var(--text-light), var(--text-dark)));
+    transition: all 0.3s;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    @apply mb-5 mr-2.5 text-[14px];
+    span {
+      background-color: light-dark(var(--bg-light), var(--bg-dark));
+      @apply block w-auto p-4 rounded-xl whitespace-nowrap;
+      &::before {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 99%;
+        right: 40px;
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 10px solid light-dark(var(--bg-light), var(--bg-dark));
+      }
+    }
+  }
+  .hwCardRow {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 20px 16px;
+  }
+  .hwCard {
+    position: relative;
+    &::before {
+      content: '';
+      @apply block absolute -z-1 pointer-events-none opacity-35;
+    }
+    &:nth-child(1) {
+      grid-column: 1/4;
+      &:before {
+        border-top: 2px solid var(--accent);
+        border-right: 2px solid var(--accent);
+        filter: drop-shadow(0px 0px 7px var(--accent));
+        @apply top-[20%] left-[98%] w-25 h-full;
+      }
+      &:after {
+        content: '';
+        top: 18%;
+        left: calc(98% + 94px);
+        box-shadow: 0 0 16px rgba(0, 246, 255, 0.529);
+        @apply block absolute w-2.5 h-2.5 rounded-[50%] bg-(--accent);
+      }
+      
+    }
+    &:nth-child(3) {
+      grid-column: 7/10; 
+      &::before {
+        border-bottom: 2px solid var(--secondary);
+        border-right: 2px solid var(--secondary);
+        filter: drop-shadow(0px 0px 7px var(--secondary));
+        @apply top-[93%] left-[43%] h-26 w-5;
+      }
+      &:after {
+        content: '';
+        border-top: 2px solid var(--secondary);
+        border-right: 2px solid var(--secondary);
+        filter: drop-shadow(0px 0px 7px var(--secondary));
+        @apply block absolute top-[35%] left-[98%] w-[45%] h-[86%] opacity-35 -z-1;
+      }
+    }
+    &:nth-child(2) {
+      grid-row: 2;
+      grid-column: 4/7;
+      &::before {
+        border-bottom: 2px solid var(--accent);
+        filter: drop-shadow(0px 0px 7px var(--accent));
+        @apply top-17.75 left-[98%] w-[50%] h-px;
+      }
+      &:after {
+        content: '';
+        box-shadow: 0 0 16px rgba(0, 246, 255, 0.529);
+        @apply block absolute top-16.75 left-[146%] w-2.5 h-2.5 rounded-[50%] bg-(--accent);
+      }
+    }
+    &:nth-child(4) {
+      grid-row: 2;
+      grid-column: 10/-1;
+      &::before {
+        border-bottom: 2px dashed var(--secondary);
+        filter: drop-shadow(0px 0px 7px var(--secondary));
+        @apply top-[15%] right-[98%] w-[58%] h-px;
+      }
+      &::after {
+        content: '';
+        box-shadow: 0 0 16px rgba(139, 92, 246, 0.8);
+        @apply block absolute w-2.5 h-2.5 rounded-[50%] bg-(--secondary) -left-1 top-[12.8%];
+      }
+    }
+  }
+}
+@container (max-width: 900px)  {
+  .hwCardRow {
+    grid-template-columns: repeat(8, 1fr);
+    gap: 30px 16px;
+  }
+  .hwCard {
+    &:nth-child(1) {
+      grid-column: 1/4;
+      &:before {
+        @apply w-13 h-[112%];
+      }
+      &:after {
+        left: calc(98% + 43px);
+      }
+      
+    }
+    &:nth-child(3) {
+      grid-column: 5/8; 
+      &::before {
+        @apply top-[92%] left-[11%] h-27.5;
+      }
+      &::after {
+        @apply w-[19%] h-full;
+      }
+    }
+    &:nth-child(2) {
+      grid-row: 2;
+      grid-column: 2/5;
+      &::before {
+        @apply w-[17%];
+      }
+      &:after {
+        @apply left-[113%];
+      }
+    }
+    &:nth-child(3) {
+      &::before {
+        @apply h-28.25;
+      }
+    }
+    &:nth-child(4) {
+      grid-row: 2;
+      grid-column: 6/-1;
+      &::before {
+        @apply w-[20%];
+      }
+    }
+  }
+  .aboutBlocks {
+    flex-direction: column;
+    align-items: center;
+  }
+  .aboutBlockItem {
+    width: 100%;
+    max-width: 430px;
+  }
+}
+@container (max-width: 678px) {
+  .hwCardRow {
+    @apply flex flex-col gap-y-5 items-center
+  }
+  .hwCard {
+    @apply max-w-107.5 w-full;
+    &::before, &::after {
+      display: none;
+    }
+  }
+}
+
+
