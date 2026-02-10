@@ -94,7 +94,7 @@ function isLocked(db, techKey) {
 
 // ---------------- QuizAPI fetch ----------------
 async function fetchQuestions({ apiKey, category, tags }) {
-  const url = new URL(QUIZ_API_URL);
+  const url = new URL(process.env.QUIZ_API_URL);
   url.searchParams.set("apiKey", apiKey);
   url.searchParams.set("limit", String(LIMIT_PER_RUN));
   url.searchParams.set("single_answer_only", "true");
@@ -114,8 +114,6 @@ async function fetchQuestions({ apiKey, category, tags }) {
 
 // ---------------- DryRun fake questions ----------------
 function makeFakeQuestions(techKey, count = 3) {
-  // Генеруємо стабільні фейкові id, щоб можна було побачити додавання/лок
-  // (не важливо які вони — в dry-run ми не пишемо blob)
   const base = Math.abs(
     Array.from(techKey).reduce((acc, ch) => acc + ch.charCodeAt(0), 0)
   );
@@ -161,7 +159,6 @@ export default async (request) => {
 
   const apiKey = process.env.QUIZAPI_KEY;
   if (!apiKey && !dryRun) {
-    // у dry-run можемо працювати і без apiKey
     return new Response("Missing QUIZAPI_KEY", { status: 500 });
   }
 
@@ -209,7 +206,6 @@ export default async (request) => {
 
       let fresh = [];
       if (dryRun) {
-        // імітуємо, що API повернув кілька питань
         fresh = makeFakeQuestions(key, 3);
       } else {
         report.totals.quizApiCalls += 1;
