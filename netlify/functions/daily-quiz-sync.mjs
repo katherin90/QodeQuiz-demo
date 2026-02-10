@@ -24,7 +24,7 @@ function isAuthorized(request) {
   const tokenFromQuery = new URL(request.url).searchParams.get("token");
   const provided = tokenFromHeader || tokenFromQuery;
 
-  return Boolean(provided && provided === process.env.QUIZ_SYNC_TOKEN);
+  return Boolean(provided && provided === process.env.DEV_READ_TOKEN);
 }
 
 // -------- DB helpers --------
