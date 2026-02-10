@@ -15,22 +15,38 @@ const TECHS = [
   { key: "wordpress", category: "WordPress" },
 ];
 
-// -------- AUTH (token) --------
-function isAuthorized(request) {
-  const tokenFromHeader = request.headers
-    .get("authorization")
-    ?.replace(/^Bearer\s+/i, "");
-
-  const tokenFromQuery = new URL(request.url).searchParams.get("token");
-  const provided = tokenFromHeader || tokenFromQuery;
-
-  return Boolean(provided && provided === process.env.DEV_READ_TOKEN);
+// ---------------- AUTH ----------------
+function getProvidedToken(request) {
+  const auth = request.headers.get("authorization") || "";
+  const headerToken = auth.replace(/^Bearer\s+/i, "").trim();
+  const queryToken = new URL(request.url).searchParams.get("token")?.trim();
+  return headerToken || queryToken || "";
 }
 
-// -------- DB helpers --------
+function isAuthorized(request) {
+  const expected = (process.env.DEV_READ_TOKEN || "").trim();
+  const provided = getProvidedToken(request);
+
+  if (!expected) return false;
+
+  return provided === expected;
+}
+
+// ---------------- DRY RUN ----------------
+function isDryRun(request) {
+  const url = new URL(request.url);
+  return (
+    url.searchParams.get("dryRun") === "true" ||
+    url.searchParams.get("dryrun") === "true" ||
+    process.env.QUIZ_DRY_RUN === "true"
+  );
+}
+
+// ---------------- DB ----------------
 function createEmptyDb() {
   const indexByTech = {};
   const lockedTech = {};
+
   for (const t of TECHS) {
     indexByTech[t.key] = [];
     lockedTech[t.key] = false;
@@ -38,10 +54,14 @@ function createEmptyDb() {
 
   return {
     version: 1,
-    questionsById: {},
-    indexByTech,
-    lockedTech,
-    meta: { createdAt: new Date().toISOString(), updatedAt: null, runs: 0 },
+    questionsById: {}, 
+    indexByTech, 
+    lockedTech, 
+    meta: {
+      createdAt: new Date().toISOString(),
+      updatedAt: null,
+      runs: 0,
+    },
   };
 }
 
@@ -72,13 +92,13 @@ function isLocked(db, techKey) {
   return db.lockedTech[techKey] || (db.indexByTech[techKey]?.length ?? 0) >= MAX_PER_TECH;
 }
 
-// -------- QuizAPI fetch --------
+// ---------------- QuizAPI fetch ----------------
 async function fetchQuestions({ apiKey, category, tags }) {
-  const url = new URL(process.env.QUIZ_API_URL);
-  const dryRun = url.searchParams.get("dryRun") === "true";
+  const url = new URL(QUIZ_API_URL);
   url.searchParams.set("apiKey", apiKey);
   url.searchParams.set("limit", String(LIMIT_PER_RUN));
-  url.searchParams.set("single_answer_only", "true"); 
+  url.searchParams.set("single_answer_only", "true");
+
   if (category) url.searchParams.set("category", category);
   if (tags && tags.length) url.searchParams.set("tags", tags.join(","));
 
@@ -92,19 +112,75 @@ async function fetchQuestions({ apiKey, category, tags }) {
   return Array.isArray(data) ? data : [];
 }
 
-// -------- handler --------
+// ---------------- DryRun fake questions ----------------
+function makeFakeQuestions(techKey, count = 3) {
+  // Генеруємо стабільні фейкові id, щоб можна було побачити додавання/лок
+  // (не важливо які вони — в dry-run ми не пишемо blob)
+  const base = Math.abs(
+    Array.from(techKey).reduce((acc, ch) => acc + ch.charCodeAt(0), 0)
+  );
+
+  return Array.from({ length: count }).map((_, i) => {
+    const id = 900000 + base * 100 + i;
+    return {
+      id,
+      question: `[DRY-RUN] Sample question for ${techKey} #${i + 1}`,
+      description: null,
+      answers: {
+        answer_a: "Option A",
+        answer_b: "Option B",
+        answer_c: "Option C",
+        answer_d: "Option D",
+        answer_e: null,
+        answer_f: null,
+      },
+      multiple_correct_answers: "false",
+      correct_answers: {
+        answer_a_correct: "true",
+        answer_b_correct: "false",
+        answer_c_correct: "false",
+        answer_d_correct: "false",
+        answer_e_correct: "false",
+        answer_f_correct: "false",
+      },
+      explanation: "Dry-run sample explanation.",
+      difficulty: "Easy",
+      category: "DryRun",
+      tags: [techKey],
+    };
+  });
+}
+
+// ---------------- handler ----------------
 export default async (request) => {
-  if (!isAuthorized(request)) return new Response("Unauthorized", { status: 401 });
+  const dryRun = isDryRun(request);
+
+  if (!isAuthorized(request)) {
+    return new Response("Unauthorized", { status: 401 });
+  }
 
   const apiKey = process.env.QUIZAPI_KEY;
-  if (!apiKey) return new Response("Missing QUIZAPI_KEY", { status: 500 });
+  if (!apiKey && !dryRun) {
+    // у dry-run можемо працювати і без apiKey
+    return new Response("Missing QUIZAPI_KEY", { status: 500 });
+  }
 
   const store = getStore("quiz-cache-v1");
 
   const existing = await store.get(DB_KEY, { type: "json" });
   const db = ensureDbShape(existing);
 
-  const report = { updatedAt: new Date().toISOString(), perTech: {} };
+  const report = {
+    dryRun,
+    updatedAt: new Date().toISOString(),
+    perTech: {},
+    totals: {
+      questionsBefore: Object.keys(db.questionsById).length,
+      questionsAfter: 0,
+      quizApiCalls: 0,
+      skippedLocked: 0,
+    },
+  };
 
   const techIdSets = {};
   for (const t of TECHS) {
@@ -117,42 +193,51 @@ export default async (request) => {
 
     if (isLocked(db, key)) {
       db.lockedTech[key] = true;
+      report.totals.skippedLocked += 1;
       report.perTech[key] = { skipped: true, reason: "locked", before, after: before };
       continue;
     }
 
     try {
-    //   const fresh = await fetchQuestions({
-    //     apiKey,
-    //     category: tech.category, 
-    //     tags: tech.tags,         
-    //   });
-    let fresh = [];
+      const remaining = MAX_PER_TECH - before;
+      if (remaining <= 0) {
+        db.lockedTech[key] = true;
+        report.totals.skippedLocked += 1;
+        report.perTech[key] = { skipped: true, reason: "already-full", before, after: before };
+        continue;
+      }
 
-    if (dryRun) {
-    // імітація відповіді QuizAPI
-    fresh = [
-        { id: 999001, multiple_correct_answers: "false" },
-        { id: 999002, multiple_correct_answers: "false" }
-    ];
-    } else {
-    fresh = await fetchQuestions({ apiKey, category, tags });
-    }
+      let fresh = [];
+      if (dryRun) {
+        // імітуємо, що API повернув кілька питань
+        fresh = makeFakeQuestions(key, 3);
+      } else {
+        report.totals.quizApiCalls += 1;
+        fresh = await fetchQuestions({
+          apiKey,
+          category: tech.category, 
+          tags: tech.tags,
+        });
+      }
 
       let addedIds = 0;
+      let storedNewQuestions = 0;
 
       for (const q of fresh) {
         const id = normalizeId(q?.id);
         if (!id) continue;
 
-    
         const mca = q?.multiple_correct_answers;
         if (mca === true || mca === "true") continue;
 
-        
-        if (!db.questionsById[String(id)]) db.questionsById[String(id)] = q;
+        // questionsById
+        const idKey = String(id);
+        if (!db.questionsById[idKey]) {
+          db.questionsById[idKey] = q;
+          storedNewQuestions += 1;
+        }
 
-    
+        // indexByTech
         if (db.indexByTech[key].length < MAX_PER_TECH && !techIdSets[key].has(id)) {
           db.indexByTech[key].unshift(id);
           techIdSets[key].add(id);
@@ -167,24 +252,27 @@ export default async (request) => {
       report.perTech[key] = {
         skipped: false,
         before,
+        fetched: fresh.length,
+        storedNewQuestions,
         addedIds,
         after: db.indexByTech[key].length,
         locked: db.lockedTech[key],
+        source: dryRun ? "dry-run" : "quizapi",
       };
     } catch (e) {
       report.perTech[key] = { skipped: false, before, error: String(e?.message || e) };
     }
   }
 
-  db.meta.runs = (db.meta.runs || 0) + 1;
-  db.meta.updatedAt = report.updatedAt;
+  report.totals.questionsAfter = Object.keys(db.questionsById).length;
 
-  // await store.setJSON(DB_KEY, db);
   if (!dryRun) {
+    db.meta.runs = (db.meta.runs || 0) + 1;
+    db.meta.updatedAt = report.updatedAt;
     await store.setJSON(DB_KEY, db);
   }
 
-  return new Response(JSON.stringify({ ok: true, dryRun, report }, null, 2), {
+  return new Response(JSON.stringify({ ok: true, report }, null, 2), {
     headers: { "content-type": "application/json; charset=utf-8" },
   });
 };
