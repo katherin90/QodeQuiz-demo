@@ -9,7 +9,7 @@ export async function getQuestions(): Promise<QuestionsBlob | null> {
     return null
   }
 
-  const res = await fetch(`${BASE}/.netlify/functions/questions`, {
+  const res = await fetch(`${BASE}/.netlify/functions/get-questions`, {
     headers: {
       "x-dev-token": TOKEN,
     },

@@ -13,11 +13,8 @@ export default async (req) => {
   const store = getStore("quiz-cache");
   const json = await store.get("questions.json", { type: "text" });
 
-  return {
-    statusCode: 200,
-    headers: { "content-type": "application/json; charset=utf-8" },
-    body:
-      json ??
+  return new Response(
+    json ??
       JSON.stringify({
         version: 1,
         questionsById: {},
@@ -25,5 +22,9 @@ export default async (req) => {
         lockedTech: emptyLockedTech,
         meta: { createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), runs: 0 },
       }),
-  };
+    {
+      status: 200,
+      headers: { "content-type": "application/json; charset=utf-8" },
+    }
+  );
 };
