@@ -8,8 +8,8 @@ export default async (req) => {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const store = getStore("quiz-cache");
-  const json = await store.get("questions.json", { type: "text" });
+  const store = getStore("quiz-cache-v1");
+  const json = await store.get("quiz-db.json", { type: "text" });
 
   return new Response(
     json ?? JSON.stringify({ message: "No data yet" }),
