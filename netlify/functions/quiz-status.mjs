@@ -1,20 +1,11 @@
 import { getStore } from "@netlify/blobs";
+import { isAuthorized } from './_helpers/auth'
 
 const DB_KEY = "quiz-db.json";
 const MAX_PER_TECH = 300;
 
-function getProvidedToken(request) {
-  const auth = request.headers.get("authorization") || "";
-  const headerToken = auth.replace(/^Bearer\s+/i, "").trim();
-  const queryToken = new URL(request.url).searchParams.get("token")?.trim();
-  return headerToken || queryToken || "";
-}
-
 export default async (request) => {
-  const expectedToken = (process.env.DEV_READ_TOKEN || "").trim();
-  const providedToken = getProvidedToken(request);
-
-  if (!expectedToken || providedToken !== expectedToken) {
+  if (!isAuthorized(request, process.env.DEV_READ_TOKEN?.trim())) {
     return new Response("Unauthorized", { status: 401 });
   }
 
