@@ -1,4 +1,5 @@
 import { getStore } from "@netlify/blobs";
+import { isAuthorized } from "./_helpers/auth";
 
 const DB_KEY = "quiz-db.json";
 const LIMIT_PER_RUN = 20;     
@@ -15,22 +16,6 @@ const TECHS = [
   { key: "wordpress", category: "WordPress" },
 ];
 
-// ---------------- AUTH ----------------
-function getProvidedToken(request) {
-  const auth = request.headers.get("authorization") || "";
-  const headerToken = auth.replace(/^Bearer\s+/i, "").trim();
-  const queryToken = new URL(request.url).searchParams.get("token")?.trim();
-  return headerToken || queryToken || "";
-}
-
-function isAuthorized(request) {
-  const expected = (process.env.DEV_READ_TOKEN || "").trim();
-  const provided = getProvidedToken(request);
-
-  if (!expected) return false;
-
-  return provided === expected;
-}
 
 // ---------------- DRY RUN ----------------
 function isDryRun(request) {
@@ -153,7 +138,7 @@ function makeFakeQuestions(techKey, count = 3) {
 export default async (request) => {
   const dryRun = isDryRun(request);
 
-  if (!isAuthorized(request)) {
+  if (!isAuthorized(request, process.env.DEV_READ_TOKEN?.trim())) {
     return new Response("Unauthorized", { status: 401 });
   }
 
