@@ -3,7 +3,7 @@ import { isAuthorized } from "./_helpers/auth";
 
 const DB_KEY = "quiz-db.json";
 const LIMIT_PER_RUN = 20;     
-const MAX_PER_TECH = 300;
+const MAX_PER_TECH = 250;
 
 const TECHS = [
   { key: "react", category: "React" },

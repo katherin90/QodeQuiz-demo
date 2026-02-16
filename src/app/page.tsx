@@ -11,8 +11,8 @@ export const metadata = {
 };
 
 export default async function Home() {
-  const data = await getQuestions() 
-  console.log(data);
+  // const data = await getQuestions() 
+  // const question = data?.questionsById[10190]
   
   return (
     <>
@@ -22,6 +22,7 @@ export default async function Home() {
           <p className="mt-5">Coming soon</p>
         </div>
       </div>
+      
       {/* <Hero/>
       <span className="sectionDivider"></span>
       <HowWork/>
