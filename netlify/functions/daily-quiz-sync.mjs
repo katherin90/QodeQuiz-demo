@@ -3,7 +3,6 @@ import { isAuthorized } from "./_helpers/auth";
 
 const DB_KEY = "quiz-db.json";
 const LIMIT_PER_RUN = 20;     
-const MAX_PER_TECH = 250;
 
 const TECHS = [
   { key: "react", category: "React" },
@@ -74,7 +73,7 @@ function normalizeId(id) {
 }
 
 function isLocked(db, techKey) {
-  return db.lockedTech[techKey] || (db.indexByTech[techKey]?.length ?? 0) >= MAX_PER_TECH;
+  return db.lockedTech[techKey] || (db.indexByTech[techKey]?.length ?? 0) >= process.env.MAX_PER_TECH;
 }
 
 // ---------------- QuizAPI fetch ----------------
@@ -181,7 +180,7 @@ export default async (request) => {
     }
 
     try {
-      const remaining = MAX_PER_TECH - before;
+      const remaining = process.env.MAX_PER_TECH - before;
       if (remaining <= 0) {
         db.lockedTech[key] = true;
         report.totals.skippedLocked += 1;
@@ -219,16 +218,16 @@ export default async (request) => {
         }
 
         // indexByTech
-        if (db.indexByTech[key].length < MAX_PER_TECH && !techIdSets[key].has(id)) {
+        if (db.indexByTech[key].length < process.env.MAX_PER_TECH && !techIdSets[key].has(id)) {
           db.indexByTech[key].unshift(id);
           techIdSets[key].add(id);
           addedIds += 1;
         }
 
-        if (db.indexByTech[key].length >= MAX_PER_TECH) break;
+        if (db.indexByTech[key].length >= process.env.MAX_PER_TECH) break;
       }
 
-      if (db.indexByTech[key].length >= MAX_PER_TECH) db.lockedTech[key] = true;
+      if (db.indexByTech[key].length >= process.env.MAX_PER_TECH) db.lockedTech[key] = true;
 
       report.perTech[key] = {
         skipped: false,
