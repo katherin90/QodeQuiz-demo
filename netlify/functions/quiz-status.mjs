@@ -2,7 +2,6 @@ import { getStore } from "@netlify/blobs";
 import { isAuthorized } from './_helpers/auth'
 
 const DB_KEY = "quiz-db.json";
-const MAX_PER_TECH = 300;
 
 export default async (request) => {
   if (!isAuthorized(request, process.env.DEV_READ_TOKEN?.trim())) {
@@ -28,12 +27,12 @@ export default async (request) => {
   for (const tech of Object.keys(db.indexByTech || {})) {
     const count = db.indexByTech[tech]?.length ?? 0;
     const locked =
-      db.lockedTech?.[tech] === true || count >= MAX_PER_TECH;
+      db.lockedTech?.[tech] === true || count >= process.env.MAX_PER_TECH;
 
     perTech[tech] = {
       count,
       locked,
-      remaining: Math.max(0, MAX_PER_TECH - count),
+      remaining: Math.max(0, process.env.MAX_PER_TECH - count),
     };
   }
 
