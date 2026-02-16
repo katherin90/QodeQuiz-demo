@@ -1,5 +1,6 @@
 export type TechKey = (typeof TECH_LIST)[number]['key'];
 export type Tech = (typeof TECH_LIST)[number];
+export type difficultyType = 'Easy' | 'Medium' | 'Hard'
 
 export type AnswerKey = "answer_a" | "answer_b" | "answer_c" | "answer_d" | "answer_e" | "answer_f";
 
@@ -37,6 +38,8 @@ export const TECH_LIST = [
   { key: 'laravel', label: 'Laravel' },
   { key: 'wordpress', label: 'WordPress' },
 ] as const;
+
+export const DIFFICULTY = ['Easy', 'Medium', 'Hard'] 
 
 
 
