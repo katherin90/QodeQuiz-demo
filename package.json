@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "sync": "curl -i -X POST \"https://qodequiz-demo.netlify.app/.netlify/functions/daily-quiz-sync?token=%TOKEN%\"",
+    "stat": "curl -i \"https://qodequiz-demo.netlify.app/.netlify/functions/quiz-status?token=%TOKEN%\""
   },
   "dependencies": {
     "@netlify/blobs": "^10.6.0",
@@ -13,14 +15,15 @@
     "classnames": "^2.5.1",
     "next": "16.1.6",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "zustand": "^5.0.11"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "netlify-cli": "^23.15.0",
+    "netlify-cli": "^23.15.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

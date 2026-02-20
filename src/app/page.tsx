@@ -1,33 +1,30 @@
 import Hero from "@/components/home/hero";
 import HowWork from "@/components/home/how-work";
+import TopicsSection from "@/components/home/topics";
 import AboutSection from "@/components/home/about";
-import { getQuestions } from "@/helpers/get-questions";
+
 import { sora } from "./fonts";
 
 
-export const metadata = {
-  title: "QodeQuiz",
-  description: "QodeQuiz demo website",
-};
 
-export default async function Home() {
-  // const data = await getQuestions() 
-  // const question = data?.questionsById[10190]
-  
+
+export default function Home() {
   return (
     <>
-       <div className="fixed top-0 left-0 bottom-0 right-0 flex justify-center items-center bg-linear-to-r from-(--accent) from-0% to-(--secondary) to-70%"> 
+       {/* <div className="fixed top-0 left-0 bottom-0 right-0 flex justify-center items-center bg-linear-to-r from-(--accent) from-0% to-(--secondary) to-70%"> 
         <div className={`text-(--bg-dark) ${sora.className} text-6xl font-bold text-center`}>
           <p>QodeQuiz</p>
           <p className="mt-5">Coming soon</p>
         </div>
-      </div>
+      </div> */}
       
-      {/* <Hero/>
+      <Hero/>
       <span className="sectionDivider"></span>
       <HowWork/>
       <span className="sectionDivider"></span>
-      <AboutSection/> */}
+      <TopicsSection/>
+      <span className="sectionDivider"></span>
+      <AboutSection/>
     </>
     
   )

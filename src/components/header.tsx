@@ -47,6 +47,7 @@ const Header:React.FC = () => {
                                 }
                             </ul>
                         </nav>
+                        <hr className='divider mt-17.5 [@media(max-height:640px)]:mt-9'/>
                         <ThemeSwitcher/>
                     </div>
                     <div>

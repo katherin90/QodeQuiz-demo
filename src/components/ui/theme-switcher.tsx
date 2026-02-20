@@ -24,7 +24,7 @@ const ThemeSwitcher:React.FC = () => {
   }
 
     return (
-        <div className='mt-17.5 [@media(max-height:640px)]:mt-9'>
+        <div className='mt-9'>
             <span className='pr-4'>&lt; Theme = "{checked ? 'Light':'Dark'}"|</span>
             <label> 
               <input type='checkbox' checked={checked} onChange={(e) => onChange(e.target.checked)} className="opacity-0 hidden pointer-events-none" data-theme/>

@@ -12,24 +12,24 @@ type BlocksItemType = {
 }
 
 const TEXT = {
-    headline: 'About the project',
-    description: 'Why CodeIQ exists and how it’s built.',
-    content: `<p>CodeIQ is a small pet project focused on frontend fundamentals. It’s designed as a practical way to test knowledge, explore edge cases, and better understand how core web concepts work in real scenarios.</p>
+    headline: 'About',
+    description: 'Why QodeQuiz exists and how it’s built.',
+    content: `<p>QodeQuiz is a small pet project focused on frontend fundamentals. It’s designed as a practical way to test knowledge, explore edge cases, and better understand how core web concepts work in real scenarios.</p>
     <p>The project prioritizes clarity over gamification. Questions are short, answers are intentional, and explanations focus on understanding why a solution works.</p>`,
     blocks: [
         {title:'Focus', items: ['Frontend basics', 'Real questions', 'Clear reasoning']},
         {title:'Design', items: ['Minimal UI', 'No distractions', 'App-like flow']},
         {title:'Tech', items: ['Modern frontend stack', 'Local data storage', 'No backend / no auth']},
     ],
-    note: ['CodeIQ is intentionally built without authentication.', 'Progress is stored locally to keep the experience simple.'],
-    flow: ['learn', 'test', 'understand']
+    note: ['QodeQuiz is intentionally built without authentication.', 'Progress is stored locally to keep the experience simple.'],
+    flow: ['build', 'iterate', 'improve']
 }
 
 const BlocksItem:React.FC<BlocksItemType> = ({data}) => {
     const {title, items} = data
     return (
         <div className='elementBg h-full'>
-            <h3 className={`text-[clamp(16px,1.5vw,28px)] ${poppins.className}`}>{title}</h3>
+            <h3 className={`text-[clamp(20px,1.5vw,28px)] ${poppins.className}`}>{title}</h3>
             <ul className='mt-4'>
                 {
                     items.map((item, index) => <li key={`${index}-2`} className='relative not-first:mt-2 before:absolute before:right-full before:top-[49%] before:w-4 before:h-0.5 before:bg-(--accent) before:opacity-40 pl-1.5'>{item}</li>)
@@ -42,13 +42,13 @@ const BlocksItem:React.FC<BlocksItemType> = ({data}) => {
 const AboutSection:React.FC = () => {
     return (
         <section className='pb-[clamp(30px,3.2vw,60px)]'>
-            <div className="content">
+            <div className="content @container">
                 <div className='text-center'>
                     <SectionHeadline headline={TEXT.headline}/>
                     <p>{TEXT.description}</p>
                 </div>
                 <div className='w-full max-w-190 mx-auto mt-[clamp(24px,2.6vw,48px)] [&>p]:not-first:mt-4 columns-2 [&>p]:break-inside-avoid max-sm:columns-1' dangerouslySetInnerHTML={{ __html: TEXT.content }}></div>
-                <ul className='mt-8 flex gap-8 aboutBlocks'>
+                <ul className='mt-8 flex gap-8 aboutBlocks @max-[678px]:gap-4'>
                     {
                         TEXT.blocks.map(item => <li key={item.title} className='flex-3 aboutBlockItem'><BlocksItem data={item}/></li>)
                     }    

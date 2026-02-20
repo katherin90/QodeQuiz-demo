@@ -2,7 +2,9 @@
 
 :root {
   --bg-light: #f5f6fa;
+  --bg-light-rgb: 245, 246, 250;
   --bg-dark: #020617;
+  --bg-dark-rgb: 2, 6, 23;
 
   --elemBg-dark: rgba(16, 23, 40, 0.27);
   --elemBg-light: rgba(248, 250, 252, 0.27);
@@ -22,8 +24,8 @@
 
   --cat-js: #FF6F00;
   --cat-js-rgb: 201, 255, 26;
-  --cat-react: #00D8FF;
-  --cat-react-rgb: 0, 246, 255;
+  --cat-react: #3FD2FF;
+  --cat-react-rgb: 63, 210, 255;
   --cat-html: #FF3D00;
   --cat-html-rgb: 255, 79, 58;
   --cat-next: #7C4DFF;
@@ -42,6 +44,7 @@
   html {
     font-family: var(--firaCode);
     color-scheme: dark;
+    scroll-behavior: smooth;
     @apply text-base leading-normal h-screen;
     
     &:has(input[data-theme]:checked) {
@@ -322,6 +325,62 @@
       }
     }
   }
+  .topicsItem {
+    --gap: clamp(62px, 4vw, 74px);
+    @apply w-full h-full relative max-w-107.5 mx-auto overflow-hidden;
+    &:hover, &:focus-visible {
+      .topicsTitle {
+        translate: 0 calc((100% - var(--gap)) * -1);
+      }
+    }
+  }
+  .topicsLink {
+    color: light-dark(var(--secondary), var(--accent));
+    @apply flex-[0_0_50%] opacity-65 relative hover:opacity-100 focus-visible:opacity-100;
+    &:before {
+      content: '';
+      @apply block absolute top-[49%] w-4 h-0.5 bg-(--accent);
+    }
+    &:nth-child(even) {
+      @apply text-right pr-1.5 before:left-full;
+    }
+    &:nth-child(odd) {
+      @apply pl-1.5 before:right-full; 
+    }
+  }
+  .topicsTitle {
+    --bgTitleDark: rgba(var(--bg-dark-rgb), 0.7);
+    --bgTitleLight: rgba(var(--bg-light-rgb), 0.7);
+    background-color: light-dark(var(--bgTitleLight), var(--bgTitleDark));
+    translate: 0 0;
+    transition: translate 0.4s;
+    border-bottom: 1px solid;
+    @apply absolute top-0 left-0 bottom-0 right-0 p-4 flex flex-col justify-end text-[clamp(20px,1.5vw,28px)] z-1 backdrop-blur-[10px];
+    &.react {
+      border-color: var(--cat-react);
+    }
+    &.next {
+      border-color: var(--cat-next);
+    }
+    &.vue {
+      border-color: var(--cat-vue);
+    }
+    &.html {
+      border-color: var(--cat-html);
+    }
+    &.js {
+      border-color: var(--cat-js);
+    }
+    &.php {
+      border-color: var(--cat-php);
+    }
+    &.laravel {
+      border-color: var(--cat-laravel);
+    }
+    &.wordpress {
+      border-color: var(--cat-wordpress);
+    }
+  }
 }
 @container (max-width: 900px)  {
   .hwCardRow {
@@ -379,6 +438,9 @@
     width: 100%;
     max-width: 430px;
   }
+  .topicsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 @container (max-width: 678px) {
   .hwCardRow {
@@ -390,6 +452,18 @@
       display: none;
     }
   }
+  .topicsGrid {
+    
+    @apply gap-4
+  }
 }
-
-
+@container (max-width: 400px) {
+  .topicsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (hover: none) {
+  .topicsTitle {
+    @apply top-0 bottom-auto
+  }
+}
