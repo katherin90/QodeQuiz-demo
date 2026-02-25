@@ -5,9 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "sync": "curl -i -X POST \"https://qodequiz-demo.netlify.app/.netlify/functions/daily-quiz-sync?token=%TOKEN%\"",
-    "stat": "curl -i \"https://qodequiz-demo.netlify.app/.netlify/functions/quiz-status?token=%TOKEN%\""
+    "start": "next start"
   },
   "dependencies": {
     "@netlify/blobs": "^10.6.0",
