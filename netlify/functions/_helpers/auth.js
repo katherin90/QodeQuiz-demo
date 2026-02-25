@@ -5,7 +5,9 @@ function getProvidedToken(request) {
   const url = new URL(request.url);
   const queryToken = url.searchParams.get("token")?.trim();
 
-  return headerToken || queryToken || "";
+  const devHeaderToken = (request.headers.get("x-dev-token") || "").trim();
+
+  return headerToken || queryToken || devHeaderToken || "";
 }
 
 export function isAuthorized(request, expectedToken) {
