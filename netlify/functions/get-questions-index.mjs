@@ -24,7 +24,7 @@ function pushNested(map, tech, diff, id) {
 
 export default async (req) => {
  
-  if (!isAuthorized(request, process.env.DEV_READ_TOKEN?.trim())) {
+  if (!isAuthorized(req, process.env.DEV_READ_TOKEN?.trim())) {
     return new Response("Unauthorized", { status: 401 });
   }
 
