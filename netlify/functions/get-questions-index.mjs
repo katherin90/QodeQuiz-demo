@@ -41,10 +41,10 @@ export default async (req) => {
     return json({ ok: false, message: "Invalid DB structure" }, 400);
   }
 
-  // 1) all ids (from questionsById keys, which you said are String(id))
-  const idsAll = Object.keys(questionsById).map((k) => Number(k));
+  //all ids
+  const idsAll = Object.keys(questionsById).map(Number);
 
-  // 2) tech + difficulty index (using existing indexByTech)
+  //tech + difficulty index 
   const indexByTechAndDiff = {};
 
   for (const [tech, ids] of Object.entries(indexByTech)) {
@@ -61,12 +61,12 @@ export default async (req) => {
     }
   }
 
-  // 3) new blob only with indexes
+  // new blob
   const indexesOnly = {
     version: 1,
     idsAll,
-    indexByTech,          // taken as-is from source
-    indexByTechAndDiff,   // newly built
+    indexByTech,         
+    indexByTechAndDiff,   
   };
 
   if (!dryRun) {
