@@ -1,16 +1,37 @@
 'use client'
 import React from 'react'
+import { poppins } from '@/app/fonts'
 
-type Props = {
-    query: {
-        tech: string
-        difficulty?: string
-    } | {}
+import { useQuestionsStore } from '@/store/useQuestionsStore'
+const TEXT = {
+    headline: 'Technical challenge',
+    description: 'Single answer. Results after submission.',
+    questionCountText: 'questions'
 }
 
+import { QueryType, QuestionType } from '@/assets/data/constants'
+type Props = {query: QueryType}
+
 const QuizContent:React.FC<Props> = ({query}) => {
+    
+    let list:QuestionType[] = (!query.tech && !query.difficulty) ? useQuestionsStore.getState().getRandomQuestions() : useQuestionsStore.getState().getQuestionsByTech(query)
+    const questionCount = list.length
+
     return (
-        <></>
+        <>
+            <section>
+                <div className="content">
+                    <h1 className={`text-[clamp(32px,3.4vw,58px)] ${poppins.className} font-bold`}>{TEXT.headline}</h1>
+                    <p className='mt-5'>{TEXT.description} <span className='text-(--secondary)'>{questionCount} {TEXT.questionCountText}</span></p>
+                </div>
+            </section>
+            <span className="sectionDivider"></span>
+            <section>
+                <div className="content flex flex-2 flex-wrap justify-between gap-10">
+                {list.map(item => <p key={item.id} className='flex-[1_1_39%]'>{item.question}</p>)}
+                </div>
+            </section>
+        </>
     )
 }
 

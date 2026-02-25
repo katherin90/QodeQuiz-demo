@@ -2,6 +2,7 @@ export type TechKeyType = (typeof TECH_LIST)[number]['key'];
 export type TechType = (typeof TECH_LIST)[number];
 
 export type AnswerKeyType = "answer_a" | "answer_b" | "answer_c" | "answer_d" | "answer_e" | "answer_f";
+export type DifficultyKeyType = 'medium' | 'hard' | 'easy'
 
 export type QuestionType = {
   id: number;
@@ -22,6 +23,8 @@ export type QuestionsBlobType = {
   lockedTech: Record<TechKeyType, boolean>;
   meta: { createdAt: string; updatedAt: string; runs: number };
 };
+
+export type QueryType = {tech?: TechKeyType, difficulty?: DifficultyKeyType}
 
 export const MENU = [
     {text:'Home', link: '/'},

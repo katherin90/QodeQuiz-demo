@@ -26,7 +26,7 @@ const Topic:React.FC<CategoryProps> = ({data}) => {
                 <span className='flex flex-2 flex-wrap justify-between pt-(--gap)'>
                     {
                         DIFFICULTY.map(item => {
-                            const url = item === 'Random' ? `quiz?tech=${key}` : `quiz?tech=${key}&difficulty=${item}`
+                            const url = item === 'Random' ? `quiz?tech=${key}` : `quiz?tech=${key}&difficulty=${item.toLowerCase()}`
                             return <Link href={url} key={`${key}-${item}`} className='topicsLink'>{item}</Link>
                         })
                     }
