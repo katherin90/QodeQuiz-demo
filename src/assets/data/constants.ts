@@ -1,28 +1,30 @@
-export type TechKey = (typeof TECH_LIST)[number]['key'];
-export type Tech = (typeof TECH_LIST)[number];
-export type difficultyType = 'Easy' | 'Medium' | 'Hard'
+export type TechKeyType = (typeof TECH_LIST)[number]['key'];
+export type TechType = (typeof TECH_LIST)[number];
 
-export type AnswerKey = "answer_a" | "answer_b" | "answer_c" | "answer_d" | "answer_e" | "answer_f";
+export type AnswerKeyType = "answer_a" | "answer_b" | "answer_c" | "answer_d" | "answer_e" | "answer_f";
+export type DifficultyKeyType = 'medium' | 'hard' | 'easy'
 
-export type Question = {
+export type QuestionType = {
   id: number;
   question: string;
   description?: string | null;
-  answers: Partial<Record<AnswerKey, string | null>>;
+  answers: Partial<Record<AnswerKeyType, string | null>>;
   multiple_correct_answers?: "true" | "false";
-  correct_answers?: Partial<Record<`${AnswerKey}_correct`, "true" | "false">>;
+  correct_answers?: Partial<Record<`${AnswerKeyType}_correct`, "true" | "false">>;
   explanation?: string | null;
   difficulty?: string;
   category?: string;
   tags?: string[];
 };
-export type QuestionsBlob = {
+export type QuestionsBlobType = {
   version: 1;
-  questionsById: Record<string, Question>;
-  indexByTech: Record<TechKey, number[]>;
-  lockedTech: Record<TechKey, boolean>;
+  questionsById: Record<string, QuestionType>;
+  indexByTech: Record<TechKeyType, number[]>;
+  lockedTech: Record<TechKeyType, boolean>;
   meta: { createdAt: string; updatedAt: string; runs: number };
 };
+
+export type QueryType = {tech?: TechKeyType, difficulty?: DifficultyKeyType}
 
 export const MENU = [
     {text:'Home', link: '/'},
@@ -39,7 +41,10 @@ export const TECH_LIST = [
   { key: 'wordpress', label: 'WordPress' },
 ] as const;
 
-export const DIFFICULTY = ['Easy', 'Medium', 'Hard'] 
+export const TECH_MAP = Object.fromEntries(TECH_LIST.map((tech) => [tech.key, tech.label]))
+
+
+export const DIFFICULTY = ['Random', 'Medium', 'Hard', 'Easy'] 
 
 
 

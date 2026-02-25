@@ -1,29 +1,24 @@
-import type { QuestionsBlob } from "@/assets/data/constants"
+import type { QuestionsBlobType } from "@/assets/data/constants"
 
-const BASE = process.env.PROD_SITE_URL
-const TOKEN = process.env.DEV_READ_TOKEN
-
-export async function getQuestions(): Promise<QuestionsBlob | null> {
+export async function getQuestions(): Promise<QuestionsBlobType> {
+  const TOKEN = process.env.DEV_READ_TOKEN
+  const BASE = process.env.PROD_SITE_URL
   if (!BASE || !TOKEN) {
-    console.error("Missing PROD_SITE_URL or DEV_READ_TOKEN")
-    return null
+    throw new Error("Missing PROD_SITE_URL or DEV_READ_TOKEN");
   }
 
   const res = await fetch(`${BASE}/.netlify/functions/get-questions`, {
     headers: {
       "x-dev-token": TOKEN,
     },
-    cache: "no-store",
+    cache: "force-cache",
+    next: { revalidate: 60 * 60 * 24 },
   })
 
   if (!res.ok) {
-    console.error("Failed to fetch questions:", res.status)
-    return null
+    throw new Error(`Failed to fetch questions: ${res.status}`);
   }
 
-  try {
-    return (await res.json()) as QuestionsBlob
-  } catch {
-    return null
-  }
+  const data = await res.json();
+  return data as QuestionsBlobType;
 } 

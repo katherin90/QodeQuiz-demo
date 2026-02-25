@@ -6,19 +6,10 @@ import Flow from '../ui/flow'
 const TEXT = {
     slogan: 'Check your frontend skills',
     description: `Short technical quizzes covering JavaScript, React, HTML and core web topics. <br>Real-world questions with explanations after each answer.`,
-    buttons: [
-        {
-            label: 'Start Random Quiz',
-            href:  '/quiz'
-        },
-         {
-            label: 'Choose a category',
-            href:  '#categories'
-        },
-    ],
-    flow: ['explore', 'test', 'learn']
+    btnRandom : {label: 'Start Random Quiz', href:  '/quiz'},
+    btnTech: { label: 'Choose a category', href:  '#categories'},
+    flow: ['discover', 'challenge', 'advance']
 }
-
 
 const Hero:React.FC = () => {
     return (
@@ -28,9 +19,8 @@ const Hero:React.FC = () => {
                 <p className={`text-[clamp(14px,1.5vw,20px)] mt-2 ${poppins.className}`}>{TEXT.slogan}</p>
                 <p className='text-[clamp(16px,1.6vw,24px)] mt-5' dangerouslySetInnerHTML={{ __html: TEXT.description }}></p>
                 <div className='mt-[clamp(32px,4.1vw,64px)] flex flex-col sm:flex-row items-center justify-center gap-[clamp(20px,2vw,36px)]'>
-                    {
-                        TEXT.buttons.map(button => <Button text={button.label} href={button.href} key={button.label}/>)
-                    }
+                    <Button text={TEXT.btnRandom.label} href={TEXT.btnRandom.href} />
+                    <a href={TEXT.btnTech.href} className='btn'>{TEXT.btnTech.label}</a>
                 </div>
             </div>
             <div className="content">

@@ -12,7 +12,7 @@ const TEXT = {
         {title:'Explanations', text:'Clear explanations after each answer.',},
         {title:'Track progress', text:'Your results are saved locally in your browser.',},
     ],
-    flow: ['choose', 'answer', 'review', 'improve']
+    flow: ['select', 'solve', 'review', 'refine']
 }
 
 const HowWork:React.FC = () => {
