@@ -1,24 +1,12 @@
-import type { QuestionsBlobType } from "@/assets/data/constants"
+import type { QuestionType } from "@/assets/data/constants"
 
-export async function getQuestions(): Promise<QuestionsBlobType> {
-  const TOKEN = process.env.DEV_READ_TOKEN
-  const BASE = process.env.PROD_SITE_URL
-  if (!BASE || !TOKEN) {
-    throw new Error("Missing PROD_SITE_URL or DEV_READ_TOKEN");
-  }
+export async function fetchQuestions(ids: number[]): Promise<QuestionType[]> {
+  const res = await fetch("/api/questions", {
+    method: "POST",
+    headers: { "content-type": "application/json; charset=utf-8" },
+    body: JSON.stringify({ ids }),
+  });
 
-  const res = await fetch(`${BASE}/.netlify/functions/get-questions`, {
-    headers: {
-      "x-dev-token": TOKEN,
-    },
-    cache: "force-cache",
-    next: { revalidate: 60 * 60 * 24 },
-  })
-
-  if (!res.ok) {
-    throw new Error(`Failed to fetch questions: ${res.status}`);
-  }
-
-  const data = await res.json();
-  return data as QuestionsBlobType;
-} 
+  if (!res.ok) throw new Error("Failed to load questions");
+  return res.json();
+}
