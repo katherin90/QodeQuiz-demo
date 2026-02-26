@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 
-export const revalidate = 60 * 60 * 24; 
-
 export async function GET() {
   const BASE = process.env.PROD_SITE_URL;
   const TOKEN = process.env.DEV_READ_TOKEN;
@@ -11,7 +9,7 @@ export async function GET() {
 
   const upstream = await fetch(`${BASE}/.netlify/functions/get-indexes`, {
     headers: { "x-dev-token": TOKEN },
-    next: { revalidate },
+    next: { revalidate: 60 * 60 * 24 },
   });
 
   if (!upstream.ok) {
