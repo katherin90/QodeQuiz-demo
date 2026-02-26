@@ -2,7 +2,7 @@
 import React from 'react'
 
 import { QuestionsBlobType } from '@/assets/data/constants'
-import { useQuestionsStore } from '@/store/useQuestionsStore'
+// import { useQuestionsStore } from '@/store/useQuestionsStore'
 
 type PropsType = {data: QuestionsBlobType}
 
@@ -12,7 +12,7 @@ const QuestionProvider:React.FC<PropsType> = ({data}) => {
     const questions = {questionsById, indexByTech}
     
     if(questions) {
-        useQuestionsStore.getState().hydrate(questions);
+        // useQuestionsStore.getState().hydrate(questions);
     } else { 
         console.log('Error. Question not found')
     }
