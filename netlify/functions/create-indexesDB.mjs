@@ -70,7 +70,9 @@ export default async (req) => {
   };
 
   if (!dryRun) {
-    await store.set(TARGET_KEY, indexesOnly);
+      await store.set(TARGET_KEY, JSON.stringify(indexesOnly), {
+      contentType: "application/json",
+    });
   }
 
   return json({ ok: true, dryRun, targetKey: TARGET_KEY });
