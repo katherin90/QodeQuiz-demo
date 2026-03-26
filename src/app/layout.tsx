@@ -13,9 +13,9 @@ export default async function RootLayout({
     <html lang="en" className={`${poppins.variable} ${firaCode.variable}`}>
       <body>
         <Header/>
-        <main>
-          {children}
-        </main>
+          <main>
+            {children}
+          </main>
       </body>
     </html>
   );
