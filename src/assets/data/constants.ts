@@ -1,8 +1,9 @@
 export type TechKeyType = (typeof TECH_LIST)[number]['key'];
+export type TechLabelType = (typeof TECH_LIST)[number]['label'];
 export type TechType = (typeof TECH_LIST)[number];
 
 export type AnswerKeyType = "answer_a" | "answer_b" | "answer_c" | "answer_d" | "answer_e" | "answer_f";
-export type DifficultyKeyType = 'medium' | 'hard' | 'easy'
+export type DifficultyKeyType = 'Medium' | 'Hard' | 'Easy'
 
 export type QuestionType = {
   id: number;
@@ -10,7 +11,7 @@ export type QuestionType = {
   description?: string | null;
   answers: Partial<Record<AnswerKeyType, string | null>>;
   multiple_correct_answers?: "true" | "false";
-  correct_answers?: Partial<Record<`${AnswerKeyType}_correct`, "true" | "false">>;
+  correct_answers: Partial<Record<`${AnswerKeyType}_correct`, "true" | "false">>;
   explanation?: string | null;
   difficulty?: string;
   category?: string;
@@ -23,8 +24,23 @@ export type QuestionsBlobType = {
   lockedTech: Record<TechKeyType, boolean>;
   meta: { createdAt: string; updatedAt: string; runs: number };
 };
-
 export type QueryType = {tech?: TechKeyType, difficulty?: DifficultyKeyType}
+
+export type ResultItemType = {
+  id: number
+  tech: TechKeyType
+  question: string
+  userAnswer: string
+  correctAnswer: string
+  explanation: string | undefined | null
+  isCorrect: boolean
+}
+export type ResultType = {
+  total: number
+  correct: number
+  wrong: number
+  items?: ResultItemType[]
+}
 
 export const MENU = [
     {text:'Home', link: '/'},
@@ -42,7 +58,6 @@ export const TECH_LIST = [
 ] as const;
 
 export const TECH_MAP = Object.fromEntries(TECH_LIST.map((tech) => [tech.key, tech.label]))
-
 
 export const DIFFICULTY = ['Random', 'Medium', 'Hard', 'Easy'] 
 

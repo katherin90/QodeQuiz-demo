@@ -7,7 +7,7 @@ export async function GET() {
     return NextResponse.json({ message: "Server misconfigured" }, { status: 500 });
   }
 
-  const upstream = await fetch(`${BASE}/.netlify/functions/get-indexes`, {
+  const upstream = await fetch(`${BASE}/.netlify/functions/get-questions-indexes`, {
     headers: { "x-dev-token": TOKEN },
     next: { revalidate: 60 * 60 * 24 },
   });

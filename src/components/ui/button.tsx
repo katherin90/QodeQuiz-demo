@@ -8,18 +8,19 @@ type PropsType = {
     text: string
     type?: 'button' | 'submit' | 'reset'
     href?: string
+    dataHref?: string
     className?: string 
     handler?: (e:React.MouseEvent<HTMLButtonElement>)=>void
 }
 
-const Button:React.FC<PropsType> = ({text, type='button', href='', className, handler}) => {
+const Button:React.FC<PropsType> = ({text, type='button', href='', dataHref, className, handler}) => {
     const classes = cn('btn', className)
     return (
         <>
             {
                 href 
                     ? <Link href={href}  className={classes}>{text}</Link> 
-                    : <button type={type} className={classes}>{text}</button>
+                    : <button type={type} className={classes} onClick={handler} data-href={dataHref ? dataHref : ''}>{text}</button>
             }
         </>
     )

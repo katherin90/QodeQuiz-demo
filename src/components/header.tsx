@@ -16,7 +16,7 @@ const TEXT = {
         {
             label: 'Sorce:',
             name: 'GitHub',
-            href: ''
+            href: 'https://github.com/katherin90/QodeQuiz-demo'
         },
     ],
     create: {
