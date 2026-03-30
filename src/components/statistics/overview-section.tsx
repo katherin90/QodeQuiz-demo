@@ -47,7 +47,7 @@ const OverviewSection:React.FC = () => {
         <section>
             <div className="content">
                 <SectionHeadline headline={TEXT.headline}/>
-                <ul className='mt-[clamp(24px,2.6vw,48px)] grid grid-cols-2 gap-8 overviewList'>
+                <ul className='mt-[clamp(24px,2.6vw,48px)] grid grid-cols-2 gap-8 overviewList @max-[580px]:grid-cols-1'>
                     {cards.map((item, index ) => <OverviewCard data={item} key={index}/>)}
                 </ul>
             </div>
